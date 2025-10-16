@@ -1,0 +1,17 @@
+@model IEnumerable<Timora.Blog.Models.Post>
+
+<h1>Blog</h1>
+
+<ul class="list-unstyled">
+@foreach (var post in Model)
+{
+    <li class="mb-3">
+        <h3 class="mb-1">
+            <a href="@Url.Action("Post", "Blog", new { slug = post.Slug })">@post.Title</a>
+        </h3>
+        <small class="text-muted">@post.PublishedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</small>
+    </li>
+}
+</ul>
+
+
