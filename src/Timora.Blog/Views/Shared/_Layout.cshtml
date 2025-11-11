@@ -1,5 +1,13 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Timora.Blog.Data
+@using Timora.Blog.Models
+@using Timora.Blog.Models.ViewModels
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject AppDbContext DbContext
+<!DOCTYPE html>
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,37 +17,120 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Timora.Blog.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Timora.Blog</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+<body class="bg-soft">
+@{
+    var currentUserId = UserManager.GetUserId(User);
+    UserProfile? currentProfile = null;
+    if (!string.IsNullOrEmpty(currentUserId))
+    {
+        currentProfile = await DbContext.UserProfiles.FirstOrDefaultAsync(p => p.IdentityUserId == currentUserId);
+    }
+}
+    <header class="site-header shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-soft navbar-toggleable-sm py-3">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand fw-bold text-success-emphasis" asp-controller="Home" asp-action="Index">Timora</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav"
+                        aria-expanded="false" aria-label="Menüyü Aç">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <div class="navbar-categories ms-3 flex-grow-1">
+                        @await Component.InvokeAsync("Categories")
+                    </div>
+                    <div class="navbar-actions d-flex align-items-center gap-3 ms-3">
+                        <div class="theme-toggle-wrapper">
+                            <div class="btn-group" role="group" aria-label="Tema Modu">
+                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="light" title="Açık Mod">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="5"></circle>
+                                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                                    </svg>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="dark" title="Koyu Mod">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                    </svg>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="reading" title="Okuma Modu">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <div class="dropdown">
+                                <button class="icon-btn profile-icon dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Profil">
+                                    <span class="visually-hidden">Profil</span>
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+                                        <circle cx="12" cy="8" r="4"></circle>
+                                        <path d="M5.5 20a6.5 6.5 0 0 1 13 0"></path>
+                                    </svg>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="@(currentProfile != null ? Url.Action("Show", "Profile", new { id = currentProfile.Id }) : Url.Action("Register", "Account"))">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                            Profilim
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                                </svg>
+                                                Çıkış Yap
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center gap-2">
+                                <a class="btn btn-success btn-sm" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+                                <a class="btn btn-outline-success btn-sm" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container py-4">
+        @if (ViewData["Breadcrumbs"] is IEnumerable<BreadcrumbItem> crumbs && crumbs.Any())
+        {
+            @await Html.PartialAsync("_Breadcrumbs", crumbs)
+        }
+        <main role="main" class="pb-4">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Timora.Blog - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer-soft py-4 mt-auto">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <span class="fw-semibold text-success-emphasis">Timora Blog</span>
+            <span class="text-muted small">&copy; @DateTime.Now.Year Timora - Tüm hakları saklıdır.</span>
+            <a class="text-success-emphasis small text-decoration-none" asp-controller="Home" asp-action="Privacy">Gizlilik Politikası</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

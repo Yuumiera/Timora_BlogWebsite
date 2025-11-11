@@ -1,21 +1,39 @@
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Timora.Blog.Data;
 using Timora.Blog.Models;
+using Timora.Blog.Models.ViewModels;
 
 namespace Timora.Blog.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly AppDbContext _dbContext;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, AppDbContext dbContext)
     {
         _logger = logger;
+        _dbContext = dbContext;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var posts = await _dbContext.Posts
+            .Where(p => p.IsPublished)
+            .Include(p => p.Category)
+            .OrderByDescending(p => p.PublishedAt)
+            .Take(9)
+            .ToListAsync();
+
+        ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Ana Sayfa", Url.Action("Index", "Home"), true)
+        };
+
+        return View(posts);
     }
 
     public IActionResult Privacy()

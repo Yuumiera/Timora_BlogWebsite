@@ -1,0 +1,21 @@
+@model IEnumerable<Timora.Blog.Models.Category>
+@{
+    var currentCategory = ViewContext.HttpContext.Request.Query["category"].ToString();
+    if (string.IsNullOrWhiteSpace(currentCategory))
+    {
+        currentCategory = "tum-yazilar";
+    }
+    var categories = Model.ToList();
+}
+
+<ul class="navbar-nav flex-row flex-wrap align-items-center gap-1 category-nav">
+@foreach (var c in categories)
+{
+    var url = Url.Action("Index", "Blog", new { category = c.Slug });
+    var isActive = string.Equals(currentCategory, c.Slug, StringComparison.OrdinalIgnoreCase);
+    <li class="nav-item">
+        <a class="nav-link category-link @(isActive ? "active" : string.Empty)" href="@url">@c.Name</a>
+    </li>
+}
+</ul>
+

@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("Timora.Blog")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d9b8c39a8b8cf9f3d85d0e756d07bb9251a6fcc4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+71041a8f7c0e655a8fa7e7f698fbfcd2b37d48d0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Timora.Blog")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Timora.Blog")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,0 +1,43 @@
+@model Timora.Blog.Models.ViewModels.PostCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Yazı";
+    var categories = (IEnumerable<Timora.Blog.Models.Category>)ViewBag.Categories;
+}
+
+<h1>Yeni Yazı</h1>
+
+<form asp-action="Create" asp-controller="Blog" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Content" class="form-label"></label>
+        <textarea asp-for="Content" class="form-control" rows="8"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label">Kategori</label>
+        <select asp-for="CategoryId" class="form-select">
+            <option value="">Seçiniz</option>
+            @foreach (var c in categories)
+            {
+                <option value="@c.Id">@c.Name</option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Kapak Fotoğrafı</label>
+        <input type="file" asp-for="CoverImage" class="form-control" accept="image/*" required />
+        <span asp-validation-for="CoverImage" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

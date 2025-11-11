@@ -1,11 +1,98 @@
 @model Timora.Blog.Models.Post
+@{
+    ViewData["Title"] = Model.Title;
+}
 
-<article>
-    <h1>@Model.Title</h1>
-    <p class="text-muted">@Model.PublishedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
-    <div>
-        @Html.Raw(Model.Content)
+<article class="blog-post card border-0 shadow-sm">
+    @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+    {
+        <div class="ratio ratio-21x9 blog-post-cover">
+            <img src="@Model.CoverImageUrl" class="w-100 h-100 object-fit-cover rounded-top" alt="@Model.Title" />
+        </div>
+    }
+    else
+    {
+        <div class="ratio ratio-21x9 blog-post-cover placeholder-cover"></div>
+    }
+    <div class="card-body p-4 p-lg-5">
+        <header class="mb-4">
+            <div class="d-flex flex-wrap gap-2 align-items-center text-muted small mb-3">
+                <span>@Model.PublishedAt.ToLocalTime().ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</span>
+                @if (Model.Category != null)
+                {
+                    <a class="badge text-bg-success-subtle text-success-emphasis text-decoration-none" href="@Url.Action("Index", "Blog", new { category = Model.Category.Slug })">@Model.Category.Name</a>
+                }
+            </div>
+            <h1 class="display-5 fw-bold text-success-emphasis mb-3">@Model.Title</h1>
+            @if (Model.Author != null)
+            {
+                var authorName = Model.Author.FullName?.Trim() ?? string.Empty;
+                var authorInitialChar = authorName.FirstOrDefault(char.IsLetterOrDigit);
+                var authorInitial = authorInitialChar == default ? 'Y' : char.ToUpperInvariant(authorInitialChar);
+                <div class="d-flex align-items-center gap-3">
+                    @if (!string.IsNullOrWhiteSpace(Model.Author.ProfileImageUrl))
+                    {
+                        <img src="@Model.Author.ProfileImageUrl" class="rounded-circle border border-2 border-success-subtle" style="width:56px;height:56px;object-fit:cover;" alt="@Model.Author.FullName" />
+                    }
+                    else
+                    {
+                        <div class="placeholder-avatar small rounded-circle d-flex align-items-center justify-content-center">
+                            <span>@authorInitial</span>
+                        </div>
+                    }
+                    <div class="d-flex flex-column">
+                        <a class="text-success-emphasis text-decoration-none fw-semibold" href="@Url.Action("Show", "Profile", new { id = Model.Author.Id })">@Model.Author.FullName</a>
+                        <span class="text-muted small">Yazar</span>
+                    </div>
+                </div>
+            }
+        </header>
+
+        <div class="blog-content lead text-body-secondary">
+            @Html.Raw(Model.Content)
+        </div>
     </div>
 </article>
 
-
+@if (Model.Author != null)
+{
+    var author = Model.Author;
+    var authorFullName = author.FullName?.Trim() ?? string.Empty;
+    var authorInitialChar = authorFullName.FirstOrDefault(char.IsLetterOrDigit);
+    var authorInitial = authorInitialChar == default ? 'Y' : char.ToUpperInvariant(authorInitialChar);
+    <section class="card author-card shadow-sm border-0 my-5">
+        <div class="card-body d-flex flex-column flex-md-row gap-4 align-items-center">
+            <div class="author-avatar">
+                @if (!string.IsNullOrWhiteSpace(author.ProfileImageUrl))
+                {
+                    <img src="@author.ProfileImageUrl" alt="@author.FullName" class="rounded-circle border border-3 border-success-subtle" style="width:88px;height:88px;object-fit:cover;" />
+                }
+                else
+                {
+                    <div class="placeholder-avatar rounded-circle d-flex align-items-center justify-content-center">
+                        <span>@authorInitial</span>
+                    </div>
+                }
+            </div>
+            <div class="flex-fill">
+                <h5 class="mb-1 text-success-emphasis">@author.FullName</h5>
+                <div class="text-muted small mb-2 d-flex flex-wrap gap-2">
+                    @if (author.Age.HasValue) { <span>@author.Age yaş</span> }
+                    @if (!string.IsNullOrWhiteSpace(author.Profession)) { <span>@author.Profession</span> }
+                    @if (!string.IsNullOrWhiteSpace(author.Gender)) { <span>@author.Gender</span> }
+                </div>
+                @if (!string.IsNullOrWhiteSpace(author.Interests))
+                {
+                    var interests = author.Interests.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        @foreach (var interest in interests)
+                        {
+                            <span class="badge rounded-pill text-bg-success-subtle text-success-emphasis">@interest</span>
+                        }
+                    </div>
+                }
+                <a class="btn btn-outline-success btn-sm" href="@Url.Action("Show", "Profile", new { id = author.Id })">Yazar Profili</a>
+            </div>
+        </div>
+    </section>
+}

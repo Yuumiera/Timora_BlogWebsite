@@ -1,0 +1,129 @@
+@model Timora.Blog.Models.UserProfile
+
+<section class="profile-header card shadow-sm border-0 mb-5">
+    <div class="card-body p-4 p-md-5">
+        <div class="row align-items-start">
+            <div class="col-auto mb-3 mb-md-0">
+                @{
+                    var fullName = Model.FullName?.Trim() ?? string.Empty;
+                    var profileInitialChar = fullName.FirstOrDefault(char.IsLetterOrDigit);
+                    var profileInitial = profileInitialChar == default ? 'Y' : char.ToUpperInvariant(profileInitialChar);
+                }
+                <div class="profile-avatar">
+                    @if (!string.IsNullOrWhiteSpace(Model.ProfileImageUrl))
+                    {
+                        <img src="@Model.ProfileImageUrl" class="rounded-circle border border-3 border-success-subtle" style="width:140px;height:140px;object-fit:cover;" alt="@Model.FullName" />
+                    }
+                    else
+                    {
+                        <div class="placeholder-avatar rounded-circle d-flex align-items-center justify-content-center" style="width:140px;height:140px;font-size:2.5rem;">
+                            <span>@profileInitial</span>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-3">
+                    <div class="flex-fill">
+                        <h2 class="mb-3 text-success-emphasis">@Model.FullName</h2>
+                        <div class="profile-info-list">
+                            <div class="profile-info-item mb-2">
+                                <strong class="text-muted me-2">Ad Soyad:</strong>
+                                <span>@Model.FullName</span>
+                            </div>
+                            @if (Model.Age.HasValue)
+                            {
+                                <div class="profile-info-item mb-2">
+                                    <strong class="text-muted me-2">Yaş:</strong>
+                                    <span>@Model.Age yaş</span>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.Gender))
+                            {
+                                <div class="profile-info-item mb-2">
+                                    <strong class="text-muted me-2">Cinsiyet:</strong>
+                                    <span>@Model.Gender</span>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.Profession))
+                            {
+                                <div class="profile-info-item mb-2">
+                                    <strong class="text-muted me-2">Meslek:</strong>
+                                    <span>@Model.Profession</span>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.Interests))
+                            {
+                                var interests = Model.Interests.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                                <div class="profile-info-item mb-2">
+                                    <strong class="text-muted me-2">İlgi Alanları ve Hobiler:</strong>
+                                    <div class="d-inline-flex flex-wrap gap-2">
+                                        @foreach (var interest in interests)
+                                        {
+                                            <span class="badge rounded-pill text-bg-success-subtle text-success-emphasis">@interest</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="ms-md-auto mt-3 mt-md-0">
+                        <a class="btn btn-success-subtle" asp-controller="Blog" asp-action="Create">Yeni Yazı</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<h4 class="mb-3">Yayımlanan İçerikler</h4>
+@{
+    var publishedPosts = Model.Posts.Where(p => p.IsPublished).OrderByDescending(p => p.PublishedAt).ToList();
+}
+@if (!publishedPosts.Any())
+{
+    <div class="alert alert-success-subtle text-success-emphasis">Bu yazarın henüz yayımlanmış bir yazısı bulunmuyor.</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+        @foreach (var post in publishedPosts)
+        {
+            <div class="col">
+                <div class="card h-100 post-card shadow-sm border-0">
+                    @if (!string.IsNullOrWhiteSpace(post.CoverImageUrl))
+                    {
+                        <a href="@Url.Action("Post", "Blog", new { slug = post.Slug })" class="ratio ratio-1x1 post-image-wrapper">
+                            <img src="@post.CoverImageUrl" class="card-img-top" alt="@post.Title" />
+                        </a>
+                    }
+                    else
+                    {
+                        var trimmedTitle = post.Title?.Trim() ?? string.Empty;
+                        var postInitialChar = trimmedTitle.FirstOrDefault(char.IsLetterOrDigit);
+                        var postInitial = postInitialChar == default ? 'Y' : char.ToUpperInvariant(postInitialChar);
+                        <a href="@Url.Action("Post", "Blog", new { slug = post.Slug })" class="ratio ratio-1x1 post-image-wrapper">
+                            <div class="placeholder-image d-flex align-items-center justify-content-center text-success-emphasis">
+                                <span>@postInitial</span>
+                            </div>
+                        </a>
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a class="stretched-link text-decoration-none" href="@Url.Action("Post", "Blog", new { slug = post.Slug })">@post.Title</a>
+                        </h5>
+                        <small class="text-muted">@post.PublishedAt.ToLocalTime().ToString("dd.MM.yyyy")</small>
+                        @if (post.Category != null)
+                        {
+                            <div class="mt-2">
+                                <span class="badge text-bg-success-subtle text-success-emphasis">@post.Category.Name</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
