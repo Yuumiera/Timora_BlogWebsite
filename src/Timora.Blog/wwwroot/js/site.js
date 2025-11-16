@@ -19,7 +19,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 root.setAttribute('data-theme', theme);
                 localStorage.setItem(storageKey, theme);
                 updateThemeButtons(theme);
-                showToast('Tema değiştirildi', 'Tema başarıyla ' + (theme === 'light' ? 'açık' : theme === 'dark' ? 'koyu' : 'okuma') + ' moduna geçirildi.', 'success');
+                const themeName = theme === 'light' ? (window.translations?.light || 'light') : 
+                                 theme === 'dark' ? (window.translations?.dark || 'dark') : 
+                                 (window.translations?.reading || 'reading');
+                const message = (window.translations?.themeChangedSuccessfully || 'Theme successfully changed to {0} mode.').replace('{0}', themeName);
+                showToast(window.translations?.themeChanged || 'Theme changed', message, 'success');
             });
         });
     }, 100);
@@ -78,7 +82,7 @@ function showToast(title, message, type = 'info', duration = 5000) {
             <div class="toast-title">${title}</div>
             <p class="toast-message">${message}</p>
         </div>
-        <button type="button" class="toast-close" aria-label="Kapat">
+        <button type="button" class="toast-close" aria-label="${window.translations?.close || 'Close'}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -137,8 +141,8 @@ function showConfirmation(title, message, onConfirm, onCancel = null) {
             <h2 id="confirmation-title" class="confirmation-dialog-title">${title}</h2>
             <p id="confirmation-message" class="confirmation-dialog-message">${message}</p>
             <div class="confirmation-dialog-actions">
-                <button type="button" class="btn btn-outline-success" data-action="cancel">İptal</button>
-                <button type="button" class="btn btn-success" data-action="confirm">Onayla</button>
+                <button type="button" class="btn btn-outline-success" data-action="cancel">${window.translations?.cancel || 'Cancel'}</button>
+                <button type="button" class="btn btn-success" data-action="confirm">${window.translations?.confirm || 'Confirm'}</button>
             </div>
         </div>
     `;

@@ -500,8 +500,6 @@ C:\Users\ShaDeS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\ne
 C:\Users\ShaDeS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\compressed\nezrqnk58p-muycvpuwrr.gz
 C:\Users\ShaDeS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\compressed\v0zgfp0y55-87fc7y1x7t.gz
 C:\Users\ShaDeS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\compressed\yfc7ypekbg-mlv21k5csn.gz
-C:\Users\ShaDeS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\compressed\3taij1hs36-pwk0el9pvf.gz
-C:\Users\ShaDeS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\compressed\2txstjznp3-z5xjze4cii.gz
 C:\Users\ASUS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\bin\Debug\net9.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\ASUS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\bin\Debug\net9.0\Microsoft.AspNetCore.Identity.UI.dll
 C:\Users\ASUS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\Timora.Blog.MvcApplicationPartsAssemblyInfo.cs
@@ -569,3 +567,5 @@ C:\Users\ASUS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9
 C:\Users\ASUS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\compressed\yfc7ypekbg-mlv21k5csn.gz
 C:\Users\ASUS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\compressed\3taij1hs36-os6t1znkvj.gz
 C:\Users\ASUS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\compressed\2txstjznp3-we3yli75nt.gz
+C:\Users\ShaDeS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\compressed\3taij1hs36-81rhx8x9vb.gz
+C:\Users\ShaDeS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\obj\Debug\net9.0\compressed\2txstjznp3-5de0lha13e.gz

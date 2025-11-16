@@ -1,6 +1,12 @@
+@using Microsoft.AspNetCore.Localization
+@using Timora.Blog.Models.ViewModels
 @model Timora.Blog.Models.Post
 @{
     ViewData["Title"] = Model.Title;
+    var requestCultureFeature = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+    if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+    var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
 }
 
 <article class="blog-post card border-0 shadow-sm">
@@ -20,7 +26,8 @@
                 <span>@Model.PublishedAt.ToLocalTime().ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</span>
                 @if (Model.Category != null)
                 {
-                    <a class="badge text-bg-success-subtle text-success-emphasis text-decoration-none" href="@Url.Action("Index", "Blog", new { category = Model.Category.Slug })">@Model.Category.Name</a>
+                    var categoryName = L(Model.Category.Slug);
+                    <a class="badge text-bg-success-subtle text-success-emphasis text-decoration-none" href="@Url.Action("Index", "Blog", new { category = Model.Category.Slug })">@categoryName</a>
                 }
             </div>
             <h1 class="display-5 fw-bold text-success-emphasis mb-3">@Model.Title</h1>
@@ -42,17 +49,81 @@
                     }
                     <div class="d-flex flex-column">
                         <a class="text-success-emphasis text-decoration-none fw-semibold" href="@Url.Action("Show", "Profile", new { id = Model.Author.Id })">@Model.Author.FullName</a>
-                        <span class="text-muted small">Yazar</span>
+                        <span class="text-muted small">@L("Author")</span>
                     </div>
                 </div>
             }
         </header>
 
-        <div class="blog-content lead text-body-secondary">
+        <div class="blog-content lead text-body-secondary" id="blogContent" style="font-size: 1.125rem;">
             @Html.Raw(Model.Content)
         </div>
     </div>
 </article>
+
+<!-- Font Size Control Buttons (Accessibility) -->
+<div class="font-size-controls" role="toolbar" aria-label="@L("Font Size")">
+    <button type="button" class="font-size-btn" id="fontSizeIncrease" aria-label="@L("Increase Font Size")" title="@L("Increase Font Size")">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <text x="6" y="16" font-size="14" font-weight="bold">A</text>
+            <line x1="18" y1="8" x2="18" y2="16"></line>
+            <line x1="14" y1="12" x2="22" y2="12"></line>
+        </svg>
+    </button>
+    <button type="button" class="font-size-btn" id="fontSizeDecrease" aria-label="@L("Decrease Font Size")" title="@L("Decrease Font Size")">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <text x="6" y="16" font-size="14" font-weight="bold">A</text>
+            <line x1="14" y1="12" x2="22" y2="12"></line>
+        </svg>
+    </button>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const blogContent = document.getElementById('blogContent');
+            const fontSizeIncrease = document.getElementById('fontSizeIncrease');
+            const fontSizeDecrease = document.getElementById('fontSizeDecrease');
+            
+            // Get saved font size or use default
+            const defaultFontSize = 1.125; // rem
+            const minFontSize = 0.875; // rem
+            const maxFontSize = 1.75; // rem
+            const step = 0.125; // rem
+            
+            let currentFontSize = parseFloat(localStorage.getItem('blogFontSize')) || defaultFontSize;
+            
+            // Apply saved font size
+            if (blogContent) {
+                blogContent.style.fontSize = currentFontSize + 'rem';
+            }
+            
+            // Increase font size
+            if (fontSizeIncrease && blogContent) {
+                fontSizeIncrease.addEventListener('click', function() {
+                    if (currentFontSize < maxFontSize) {
+                        currentFontSize = Math.min(currentFontSize + step, maxFontSize);
+                        blogContent.style.fontSize = currentFontSize + 'rem';
+                        localStorage.setItem('blogFontSize', currentFontSize.toString());
+                        announceToScreenReader('@L("Font Size")' + ': ' + Math.round(currentFontSize * 100) + '%');
+                    }
+                });
+            }
+            
+            // Decrease font size
+            if (fontSizeDecrease && blogContent) {
+                fontSizeDecrease.addEventListener('click', function() {
+                    if (currentFontSize > minFontSize) {
+                        currentFontSize = Math.max(currentFontSize - step, minFontSize);
+                        blogContent.style.fontSize = currentFontSize + 'rem';
+                        localStorage.setItem('blogFontSize', currentFontSize.toString());
+                        announceToScreenReader('@L("Font Size")' + ': ' + Math.round(currentFontSize * 100) + '%');
+                    }
+                });
+            }
+        });
+    </script>
+}
 
 @if (Model.Author != null)
 {
@@ -91,7 +162,7 @@
                         }
                     </div>
                 }
-                <a class="btn btn-outline-success btn-sm" href="@Url.Action("Show", "Profile", new { id = author.Id })">Yazar Profili</a>
+                                <a class="btn btn-outline-success btn-sm" href="@Url.Action("Show", "Profile", new { id = author.Id })">@L("Author Profile")</a>
             </div>
         </div>
     </section>

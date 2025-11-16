@@ -1,8 +1,15 @@
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Localization
+@using Timora.Blog.Models.ViewModels
 @inject SignInManager<IdentityUser> SignInManager
 @model IEnumerable<Timora.Blog.Models.Post>
 @{
     ViewData["Title"] = "Blog";
+    // Get current culture
+    var requestCultureFeature = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+    if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+    var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
 }
 
 <section class="page-header mb-4">
@@ -10,18 +17,18 @@
         <div class="card-body d-flex flex-column flex-md-row align-items-center gap-4">
             <div class="flex-fill">
                 <h1 class="display-6 fw-bold text-success-emphasis mb-2">Timora Blog</h1>
-                <p class="lead text-muted mb-0">Ruhunuza dokunan hikayeleri, ilham veren fikirleri ve günlük yaşamınıza renk katacak önerileri keşfedin.</p>
+                <p class="lead text-muted mb-0">@L("Blog Description")</p>
             </div>
             <div class="d-flex gap-3">
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    <a class="btn btn-success" asp-controller="Blog" asp-action="Create">Yeni Yazı Yaz</a>
+                    <a class="btn btn-success" asp-controller="Blog" asp-action="Create">@L("New Post")</a>
                 }
                 else
                 {
-                    <a class="btn btn-success" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Create", "Blog")">Yeni Yazı Yaz</a>
+                    <a class="btn btn-success" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Create", "Blog")">@L("New Post")</a>
                 }
-                <a class="btn btn-outline-success" href="@Url.Action("Index", "Blog", new { category = "tum-yazilar" })">Tüm Yazılar</a>
+                <a class="btn btn-outline-success" href="@Url.Action("Index", "Blog", new { category = "tum-yazilar" })">@L("tum-yazilar")</a>
             </div>
         </div>
     </div>
@@ -31,15 +38,15 @@
 {
     <div class="empty-state">
         <div class="empty-state-icon">📝</div>
-        <h2 class="empty-state-title">Henüz yazı yok</h2>
-        <p class="empty-state-message">Henüz bir yazı eklenmedi. İlk yazıyı sen paylaş!</p>
+        <h2 class="empty-state-title">@L("No Posts Yet")</h2>
+        <p class="empty-state-message">@L("No Posts Message")</p>
         @if (SignInManager.IsSignedIn(User))
         {
-            <a class="btn btn-success" asp-controller="Blog" asp-action="Create">Yeni Yazı Yaz</a>
+            <a class="btn btn-success" asp-controller="Blog" asp-action="Create">@L("Write New Post")</a>
         }
         else
         {
-            <a class="btn btn-success" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Create", "Blog")">Yeni Yazı Yaz</a>
+            <a class="btn btn-success" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Create", "Blog")">@L("Write New Post")</a>
         }
     </div>
 }
@@ -70,8 +77,9 @@ else
                             <span>@post.PublishedAt.ToLocalTime().ToString("dd.MM.yyyy")</span>
                             @if (post.Category != null)
                             {
+                                var categoryName = L(post.Category.Slug);
                                 <a class="badge text-bg-success-subtle text-success-emphasis text-decoration-none" href="@Url.Action("Index", "Blog", new { category = post.Category.Slug })">
-                                    @post.Category.Name
+                                    @categoryName
                                 </a>
                             }
                         </div>

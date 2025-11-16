@@ -3,11 +3,19 @@
 @using Timora.Blog.Data
 @using Timora.Blog.Models
 @using Timora.Blog.Models.ViewModels
+@using Microsoft.AspNetCore.Localization
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 @inject AppDbContext DbContext
+@{
+    var requestCultureFeature = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+    if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+    var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
+    var supportedCultures = LanguageStrings.GetSupportedCultures();
+}
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="@(currentCulture.Split('-')[0])" dir="@(currentCulture.StartsWith("ar") ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,14 +35,14 @@
     }
 }
     <!-- Skip to Content Link - Accessibility -->
-    <a href="#main-content" class="skip-to-content">İçeriğe Geç</a>
+    <a href="#main-content" class="skip-to-content">@L("Skip to Content")</a>
     
     <header class="site-header shadow-sm">
         <nav class="navbar navbar-expand-lg navbar-soft navbar-toggleable-sm py-3">
             <div class="container-fluid px-4">
                 <a class="navbar-brand fw-bold text-success-emphasis" asp-controller="Home" asp-action="Index">Timora</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav"
-                        aria-expanded="false" aria-label="Menüyü Aç">
+                        aria-expanded="false" aria-label="@L("Open Menu")">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="mainNav">
@@ -42,9 +50,43 @@
                         @await Component.InvokeAsync("Categories")
                     </div>
                     <div class="navbar-actions d-flex align-items-center gap-3 ms-3">
+                        <!-- Language Selector -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-success dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="@L("Select Language")" title="@L("Language")">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                </svg>
+                                <span class="d-none d-md-inline">@LanguageStrings.GetCultureName(currentCulture)</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                                @foreach (var culture in supportedCultures)
+                                {
+                                    var cultureName = LanguageStrings.GetCultureName(culture);
+                                    var isActive = culture == currentCulture;
+                                    <li>
+                                        <form asp-controller="Language" asp-action="Set" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="culture" value="@culture" />
+                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                                            <button type="submit" class="dropdown-item @(isActive ? "active" : "")" @(isActive ? "aria-current=\"true\"" : "")>
+                                                @cultureName
+                                                @if (isActive)
+                                                {
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ms-2">
+                                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                                    </svg>
+                                                }
+                                            </button>
+                                        </form>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
                         <div class="theme-toggle-wrapper">
-                            <div class="btn-group" role="group" aria-label="Tema Modu">
-                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="light" title="Açık Mod" aria-label="Açık tema modunu seç">
+                            <div class="btn-group" role="group" aria-label="@L("Theme Mode")">
+                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="light" title="@L("Light Mode")" aria-label="@L("Select Light Theme")">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                         <circle cx="12" cy="12" r="5"></circle>
                                         <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -57,12 +99,12 @@
                                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                                     </svg>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="dark" title="Koyu Mod" aria-label="Koyu tema modunu seç">
+                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="dark" title="@L("Dark Mode")" aria-label="@L("Select Dark Theme")">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                                     </svg>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="reading" title="Okuma Modu" aria-label="Okuma tema modunu seç">
+                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="reading" title="@L("Reading Mode")" aria-label="@L("Select Reading Theme")">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
@@ -73,8 +115,8 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <div class="dropdown">
-                                <button class="icon-btn profile-icon dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Profil menüsü" title="Profil">
-                                    <span class="visually-hidden">Profil</span>
+                                <button class="icon-btn profile-icon dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="@L("Profile Menu")" title="@L("Profile")">
+                                    <span class="visually-hidden">@L("Profile")</span>
                                     <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
                                         <circle cx="12" cy="8" r="4"></circle>
                                         <path d="M5.5 20a6.5 6.5 0 0 1 13 0"></path>
@@ -87,7 +129,7 @@
                                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                                 <circle cx="12" cy="7" r="4"></circle>
                                             </svg>
-                                            Profilim
+                                            @L("My Profile")
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
@@ -100,7 +142,7 @@
                                                     <polyline points="16 17 21 12 16 7"></polyline>
                                                     <line x1="21" y1="12" x2="9" y2="12"></line>
                                                 </svg>
-                                                Çıkış Yap
+                                                @L("Logout")
                                             </button>
                                         </form>
                                     </li>
@@ -110,8 +152,8 @@
                         else
                         {
                             <div class="d-flex align-items-center gap-2">
-                                <a class="btn btn-success btn-sm" asp-controller="Account" asp-action="Login">Giriş Yap</a>
-                                <a class="btn btn-outline-success btn-sm" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
+                                <a class="btn btn-success btn-sm" asp-controller="Account" asp-action="Login">@L("Login")</a>
+                                <a class="btn btn-outline-success btn-sm" asp-controller="Account" asp-action="Register">@L("Register")</a>
                             </div>
                         }
                     </div>
@@ -132,14 +174,26 @@
     <footer class="footer-soft py-4 mt-auto">
         <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
             <span class="fw-semibold text-success-emphasis">Timora Blog</span>
-            <span class="text-muted small">&copy; @DateTime.Now.Year Timora - Tüm hakları saklıdır.</span>
-            <a class="text-success-emphasis small text-decoration-none" asp-controller="Home" asp-action="Privacy">Gizlilik Politikası</a>
+            <span class="text-muted small">&copy; @DateTime.Now.Year Timora - @L("All Rights Reserved")</span>
+            <a class="text-success-emphasis small text-decoration-none" asp-controller="Home" asp-action="Privacy">@L("Privacy Policy")</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
+        // Pass translations to JavaScript
+        window.translations = {
+            themeChanged: '@L("Theme Changed")',
+            themeChangedSuccessfully: '@L("Theme Changed Successfully")',
+            light: '@L("Light")',
+            dark: '@L("Dark")',
+            reading: '@L("Reading")',
+            cancel: '@L("Cancel")',
+            confirm: '@L("Confirm")',
+            close: '@L("Close")'
+        };
+        
         // Logout confirmation
         document.addEventListener('DOMContentLoaded', function() {
             const logoutForm = document.getElementById('logoutForm');
@@ -149,8 +203,8 @@
                 logoutForm.addEventListener('submit', function(e) {
                     e.preventDefault();
                     showConfirmation(
-                        'Çıkış Yap',
-                        'Hesabınızdan çıkmak istediğinizden emin misiniz?',
+                        '@L("Logout Confirmation")',
+                        '@L("Logout Confirmation Message")',
                         function() {
                             logoutForm.submit();
                         }

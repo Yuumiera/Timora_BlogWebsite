@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Timora.Blog.Models.ViewModels;
 using System.Linq;
+using Microsoft.AspNetCore.Localization;
 
 namespace Timora.Blog.Controllers
 {
@@ -45,15 +46,23 @@ namespace Timora.Blog.Controllers
 
             var posts = await query.ToListAsync();
 
+            // Get current culture for breadcrumbs
+            var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
+            var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+            if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+            var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
+
             var breadcrumbs = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem("Ana Sayfa", Url.Action("Index", "Home")),
-                new BreadcrumbItem("Blog", Url.Action("Index", "Blog"))
+                new BreadcrumbItem(L("Home"), Url.Action("Index", "Home")),
+                new BreadcrumbItem(L("Blog"), Url.Action("Index", "Blog"))
             };
 
             if (activeCategory != null)
             {
-                breadcrumbs.Add(new BreadcrumbItem(activeCategory.Name, Url.Action("Index", "Blog", new { category = activeCategory.Slug })));
+                // Get translated category name
+                var categoryName = L(activeCategory.Slug);
+                breadcrumbs.Add(new BreadcrumbItem(categoryName, Url.Action("Index", "Blog", new { category = activeCategory.Slug })));
             }
 
             for (int i = 0; i < breadcrumbs.Count; i++)
@@ -80,15 +89,23 @@ namespace Timora.Blog.Controllers
                 return NotFound();
             }
 
+            // Get current culture for breadcrumbs
+            var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
+            var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+            if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+            var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
+
             var breadcrumbs = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem("Ana Sayfa", Url.Action("Index", "Home")),
-                new BreadcrumbItem("Blog", Url.Action("Index", "Blog"))
+                new BreadcrumbItem(L("Home"), Url.Action("Index", "Home")),
+                new BreadcrumbItem(L("Blog"), Url.Action("Index", "Blog"))
             };
 
             if (post.Category != null)
             {
-                breadcrumbs.Add(new BreadcrumbItem(post.Category.Name, Url.Action("Index", "Blog", new { category = post.Category.Slug })));
+                // Get translated category name
+                var categoryName = L(post.Category.Slug);
+                breadcrumbs.Add(new BreadcrumbItem(categoryName, Url.Action("Index", "Blog", new { category = post.Category.Slug })));
             }
 
             breadcrumbs.Add(new BreadcrumbItem(post.Title, null));
@@ -106,12 +123,18 @@ namespace Timora.Blog.Controllers
         [HttpGet("Create")]
         public async Task<IActionResult> Create()
         {
+            // Get current culture
+            var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
+            var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+            if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+            var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
+
             ViewBag.Categories = await _dbContext.Categories.OrderBy(c => c.Name).ToListAsync();
             ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem("Ana Sayfa", Url.Action("Index", "Home")),
-                new BreadcrumbItem("Blog", Url.Action("Index", "Blog")),
-                new BreadcrumbItem("Yeni Yazı", null, true)
+                new BreadcrumbItem(L("Home"), Url.Action("Index", "Home")),
+                new BreadcrumbItem(L("Blog"), Url.Action("Index", "Blog")),
+                new BreadcrumbItem(L("New Post"), null, true)
             };
             return View(new PostCreateViewModel());
         }
@@ -121,11 +144,17 @@ namespace Timora.Blog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PostCreateViewModel vm)
         {
+            // Get current culture for breadcrumbs
+            var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
+            var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+            if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+            var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
+
             ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem("Ana Sayfa", Url.Action("Index", "Home")),
-                new BreadcrumbItem("Blog", Url.Action("Index", "Blog")),
-                new BreadcrumbItem("Yeni Yazı", null, true)
+                new BreadcrumbItem(L("Home"), Url.Action("Index", "Home")),
+                new BreadcrumbItem(L("Blog"), Url.Action("Index", "Blog")),
+                new BreadcrumbItem(L("New Post"), null, true)
             };
 
             // Validate cover image for new posts
@@ -227,12 +256,18 @@ namespace Timora.Blog.Controllers
                 return Forbid();
             }
 
+            // Get current culture
+            var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
+            var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+            if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+            var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
+
             ViewBag.Categories = await _dbContext.Categories.OrderBy(c => c.Name).ToListAsync();
             ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem("Ana Sayfa", Url.Action("Index", "Home")),
-                new BreadcrumbItem("Blog", Url.Action("Index", "Blog")),
-                new BreadcrumbItem("Yazıyı Düzenle", null, true)
+                new BreadcrumbItem(L("Home"), Url.Action("Index", "Home")),
+                new BreadcrumbItem(L("Blog"), Url.Action("Index", "Blog")),
+                new BreadcrumbItem(L("Edit"), null, true)
             };
 
             var vm = new PostCreateViewModel
@@ -275,11 +310,17 @@ namespace Timora.Blog.Controllers
                 return Forbid();
             }
 
+            // Get current culture for breadcrumbs
+            var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
+            var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+            if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+            var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
+
             ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem("Ana Sayfa", Url.Action("Index", "Home")),
-                new BreadcrumbItem("Blog", Url.Action("Index", "Blog")),
-                new BreadcrumbItem("Yazıyı Düzenle", null, true)
+                new BreadcrumbItem(L("Home"), Url.Action("Index", "Home")),
+                new BreadcrumbItem(L("Blog"), Url.Action("Index", "Blog")),
+                new BreadcrumbItem(L("Edit"), null, true)
             };
 
             if (!ModelState.IsValid)

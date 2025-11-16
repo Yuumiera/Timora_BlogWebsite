@@ -1,26 +1,33 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Localization
+@using Timora.Blog.Models.ViewModels
 @inject SignInManager<IdentityUser> SignInManager
 @model IEnumerable<Timora.Blog.Models.Post>
 @{
     ViewData["Title"] = "Ana Sayfa";
+    // Get current culture
+    var requestCultureFeature = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+    if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+    var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
 }
 
 <section class="hero-section card border-0 shadow-sm mb-4">
     <div class="card-body p-4 p-md-5 d-flex flex-column flex-md-row align-items-center gap-4">
         <div class="flex-fill">
-            <span class="badge text-bg-success-subtle text-success-emphasis mb-3">Timora Topluluğu</span>
-            <h1 class="display-5 fw-bold text-success-emphasis mb-3">Her Gün Yeni Bir İlham</h1>
-            <p class="lead text-muted mb-4">Tutkulu yazarlarımızın özenle hazırladığı içerikleri keşfedin. Yaşamdan teknolojiye, seyahatten sanata kadar aradığınız her şeyi burada bulacaksınız.</p>
+            <span class="badge text-bg-success-subtle text-success-emphasis mb-3">@L("Timora Community")</span>
+            <h1 class="display-5 fw-bold text-success-emphasis mb-3">@L("Daily Inspiration")</h1>
+            <p class="lead text-muted mb-4">@L("Home Description")</p>
             <div class="d-flex flex-wrap gap-3">
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    <a class="btn btn-success btn-lg" asp-controller="Blog" asp-action="Create">Blog Yazısı Paylaş</a>
+                    <a class="btn btn-success btn-lg" asp-controller="Blog" asp-action="Create">@L("Share Blog Post")</a>
                 }
                 else
                 {
-                    <a class="btn btn-success btn-lg" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Create", "Blog")">Blog Yazısı Paylaş</a>
+                    <a class="btn btn-success btn-lg" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Create", "Blog")">@L("Share Blog Post")</a>
                 }
-                <a class="btn btn-outline-success btn-lg" asp-controller="Blog" asp-action="Index">Tüm Yazıları Gör</a>
+                <a class="btn btn-outline-success btn-lg" asp-controller="Blog" asp-action="Index">@L("View All Posts")</a>
             </div>
         </div>
         <div class="hero-illustration rounded-4"></div>
@@ -29,12 +36,12 @@
 
 <section class="latest-posts">
     <div class="section-header d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h4 text-success-emphasis mb-0">En Yeni Yazılar</h2>
-        <a class="text-success text-decoration-none" asp-controller="Blog" asp-action="Index">Tümünü Gör &rarr;</a>
+        <h2 class="h4 text-success-emphasis mb-0">@L("Latest Posts")</h2>
+        <a class="text-success text-decoration-none" asp-controller="Blog" asp-action="Index">@L("View All") &rarr;</a>
     </div>
     @if (!Model.Any())
     {
-        <div class="alert alert-success-subtle text-success-emphasis mb-0">Henüz içerik eklenmedi. Hemen ilk yazını paylaş!</div>
+        <div class="alert alert-success-subtle text-success-emphasis mb-0">@L("No Content Yet")</div>
     }
     else
     {
@@ -63,8 +70,9 @@
                                 <span>@post.PublishedAt.ToLocalTime().ToString("dd.MM.yyyy")</span>
                                 @if (post.Category != null)
                                 {
+                                    var categoryName = L(post.Category.Slug);
                                     <a class="badge text-bg-success-subtle text-success-emphasis text-decoration-none" href="@Url.Action("Index", "Blog", new { category = post.Category.Slug })">
-                                        @post.Category.Name
+                                        @categoryName
                                     </a>
                                 }
                             </div>

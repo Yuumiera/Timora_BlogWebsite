@@ -1,4 +1,12 @@
+@using Microsoft.AspNetCore.Localization
+@using Timora.Blog.Models.ViewModels
 @model IEnumerable<Timora.Blog.Models.ViewModels.BreadcrumbItem>
+@{
+    var requestCultureFeature = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+    if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+    var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
+}
 
 <nav aria-label="breadcrumb" class="breadcrumb-wrapper mb-4">
     <ol class="breadcrumb mb-0">

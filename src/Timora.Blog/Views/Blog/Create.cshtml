@@ -1,8 +1,16 @@
 @using System.Linq
+@using Microsoft.AspNetCore.Localization
+@using Timora.Blog.Models.ViewModels
 @model Timora.Blog.Models.ViewModels.PostCreateViewModel
 @{
     ViewData["Title"] = "Yeni Yazı";
     var categories = ViewBag.Categories as IEnumerable<Timora.Blog.Models.Category> ?? Enumerable.Empty<Timora.Blog.Models.Category>();
+    
+    // Get current culture
+    var requestCultureFeature = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+    if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+    var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
 }
 
 <div class="row justify-content-center">
@@ -47,7 +55,8 @@
                                 <option value="">Kategori seçiniz...</option>
                                 @foreach (var c in categories)
                                 {
-                                    <option value="@c.Id">@c.Name</option>
+                                    var categoryName = L(c.Slug);
+                                    <option value="@c.Id">@categoryName</option>
                                 }
                             </select>
                             <span asp-validation-for="CategoryId" class="text-danger"></span>

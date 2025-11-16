@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Localization;
 using Timora.Blog.Data;
 using Timora.Blog.Models;
 using Timora.Blog.Models.ViewModels;
@@ -28,9 +29,15 @@ public class HomeController : Controller
             .Take(9)
             .ToListAsync();
 
+        // Get current culture for breadcrumbs
+        var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
+        var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+        if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+        var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
+
         ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
         {
-            new BreadcrumbItem("Ana Sayfa", Url.Action("Index", "Home"), true)
+            new BreadcrumbItem(L("Home"), Url.Action("Index", "Home"), true)
         };
 
         return View(posts);

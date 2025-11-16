@@ -1,3 +1,5 @@
+@using Microsoft.AspNetCore.Localization
+@using Timora.Blog.Models.ViewModels
 @model IEnumerable<Timora.Blog.Models.Category>
 @{
     var currentCategory = ViewContext.HttpContext.Request.Query["category"].ToString();
@@ -6,6 +8,12 @@
         currentCategory = "tum-yazilar";
     }
     var categories = Model.ToList();
+    
+    // Get current culture
+    var requestCultureFeature = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+    if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+    var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
 }
 
 <ul class="navbar-nav flex-row flex-wrap align-items-center gap-1 category-nav">
@@ -13,8 +21,10 @@
 {
     var url = Url.Action("Index", "Blog", new { category = c.Slug });
     var isActive = string.Equals(currentCategory, c.Slug, StringComparison.OrdinalIgnoreCase);
+    // Get translated category name using slug as key
+    var categoryName = L(c.Slug);
     <li class="nav-item">
-        <a class="nav-link category-link @(isActive ? "active" : string.Empty)" href="@url">@c.Name</a>
+        <a class="nav-link category-link @(isActive ? "active" : string.Empty)" href="@url">@categoryName</a>
     </li>
 }
 </ul>

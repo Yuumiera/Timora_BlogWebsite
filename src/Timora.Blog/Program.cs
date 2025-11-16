@@ -1,12 +1,48 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Timora.Blog.Data;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+// Add localization
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[]
+    {
+        new CultureInfo("tr-TR"),
+        new CultureInfo("en-US"),
+        new CultureInfo("de-DE"),
+        new CultureInfo("fr-FR"),
+        new CultureInfo("es-ES"),
+        new CultureInfo("ar-SA"),
+        new CultureInfo("ru-RU"),
+        new CultureInfo("it-IT"),
+        new CultureInfo("pt-BR"),
+        new CultureInfo("ja-JP"),
+        new CultureInfo("zh-CN"),
+        new CultureInfo("ko-KR"),
+        new CultureInfo("nl-NL"),
+        new CultureInfo("pl-PL"),
+        new CultureInfo("sv-SE")
+    };
+
+    options.DefaultRequestCulture = new RequestCulture("tr-TR");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+    
+    // Configure cookie provider with default cookie name
+    var cookieProvider = new CookieRequestCultureProvider
+    {
+        CookieName = CookieRequestCultureProvider.DefaultCookieName
+    };
+    options.RequestCultureProviders.Insert(0, cookieProvider);
+});
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
@@ -41,6 +77,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// Add localization middleware
+var localizationOptions = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>().Value;
+app.UseRequestLocalization(localizationOptions);
 
 app.UseAuthentication();
 app.UseAuthorization();
