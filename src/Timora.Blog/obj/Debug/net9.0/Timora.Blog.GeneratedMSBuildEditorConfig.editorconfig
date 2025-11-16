@@ -17,73 +17,77 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Timora.Blog
 build_property.RootNamespace = Timora.Blog
-build_property.ProjectDir = C:\Users\ShaDeS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\
+build_property.ProjectDir = C:\Users\ASUS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\ShaDeS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog
+build_property.MSBuildProjectDirectory = C:\Users\ASUS\Desktop\Projects\Timora_BlogWebsite\src\Timora.Blog
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Account/Login.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Account/Register.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Blog/Create.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Blog/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmxvZ1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Blog/Index.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Blog/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmxvZ1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Blog/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmxvZ1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Blog/Post.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Blog/Post.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmxvZ1xQb3N0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Home/Index.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Home/Privacy.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Profile/Show.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Profile/Show.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxTaG93LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Shared/Components/Categories/Default.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Shared/Components/Categories/Default.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcQ2F0ZWdvcmllc1xEZWZhdWx0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Shared/Error.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Shared/_Breadcrumbs.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Shared/_Breadcrumbs.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9CcmVhZGNydW1icy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/_ViewImports.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/_ViewStart.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ShaDeS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Shared/_Layout.cshtml]
+[C:/Users/ASUS/Desktop/Projects/Timora_BlogWebsite/src/Timora.Blog/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-gclqa83ble

@@ -11,10 +11,10 @@ namespace Timora.Blog.Models.ViewModels
         [Required]
         public string Content { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Kategori seçimi zorunludur.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Geçerli bir kategori seçiniz.")]
         public int CategoryId { get; set; }
 
-        [Required(ErrorMessage = "En az bir görsel (kapak fotoğrafı) yüklemelisiniz.")]
         public IFormFile? CoverImage { get; set; }
     }
 }

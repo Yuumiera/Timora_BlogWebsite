@@ -1,3 +1,5 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
 @model IEnumerable<Timora.Blog.Models.Post>
 @{
     ViewData["Title"] = "Blog";
@@ -11,7 +13,14 @@
                 <p class="lead text-muted mb-0">Ruhunuza dokunan hikayeleri, ilham veren fikirleri ve günlük yaşamınıza renk katacak önerileri keşfedin.</p>
             </div>
             <div class="d-flex gap-3">
-                <a class="btn btn-success" asp-controller="Blog" asp-action="Create">Yeni Yazı Yaz</a>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a class="btn btn-success" asp-controller="Blog" asp-action="Create">Yeni Yazı Yaz</a>
+                }
+                else
+                {
+                    <a class="btn btn-success" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Create", "Blog")">Yeni Yazı Yaz</a>
+                }
                 <a class="btn btn-outline-success" href="@Url.Action("Index", "Blog", new { category = "tum-yazilar" })">Tüm Yazılar</a>
             </div>
         </div>
@@ -20,7 +29,19 @@
 
 @if (!Model.Any())
 {
-    <div class="alert alert-success-subtle text-success-emphasis">Henüz bir yazı eklenmedi. İlk yazıyı sen paylaş!</div>
+    <div class="empty-state">
+        <div class="empty-state-icon">📝</div>
+        <h2 class="empty-state-title">Henüz yazı yok</h2>
+        <p class="empty-state-message">Henüz bir yazı eklenmedi. İlk yazıyı sen paylaş!</p>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <a class="btn btn-success" asp-controller="Blog" asp-action="Create">Yeni Yazı Yaz</a>
+        }
+        else
+        {
+            <a class="btn btn-success" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Create", "Blog")">Yeni Yazı Yaz</a>
+        }
+    </div>
 }
 else
 {

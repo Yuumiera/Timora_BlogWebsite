@@ -26,6 +26,9 @@
         currentProfile = await DbContext.UserProfiles.FirstOrDefaultAsync(p => p.IdentityUserId == currentUserId);
     }
 }
+    <!-- Skip to Content Link - Accessibility -->
+    <a href="#main-content" class="skip-to-content">İçeriğe Geç</a>
+    
     <header class="site-header shadow-sm">
         <nav class="navbar navbar-expand-lg navbar-soft navbar-toggleable-sm py-3">
             <div class="container-fluid px-4">
@@ -41,8 +44,8 @@
                     <div class="navbar-actions d-flex align-items-center gap-3 ms-3">
                         <div class="theme-toggle-wrapper">
                             <div class="btn-group" role="group" aria-label="Tema Modu">
-                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="light" title="Açık Mod">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="light" title="Açık Mod" aria-label="Açık tema modunu seç">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                         <circle cx="12" cy="12" r="5"></circle>
                                         <line x1="12" y1="1" x2="12" y2="3"></line>
                                         <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -54,13 +57,13 @@
                                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                                     </svg>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="dark" title="Koyu Mod">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="dark" title="Koyu Mod" aria-label="Koyu tema modunu seç">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                                     </svg>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="reading" title="Okuma Modu">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <button type="button" class="btn btn-sm btn-outline-success theme-btn" data-theme="reading" title="Okuma Modu" aria-label="Okuma tema modunu seç">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                                     </svg>
@@ -70,7 +73,7 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <div class="dropdown">
-                                <button class="icon-btn profile-icon dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Profil">
+                                <button class="icon-btn profile-icon dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Profil menüsü" title="Profil">
                                     <span class="visually-hidden">Profil</span>
                                     <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
                                         <circle cx="12" cy="8" r="4"></circle>
@@ -89,9 +92,9 @@
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline" id="logoutForm">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="dropdown-item">
+                                            <button type="submit" class="dropdown-item" id="logoutBtn">
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
                                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                                     <polyline points="16 17 21 12 16 7"></polyline>
@@ -121,7 +124,7 @@
         {
             @await Html.PartialAsync("_Breadcrumbs", crumbs)
         }
-        <main role="main" class="pb-4">
+        <main id="main-content" role="main" class="pb-4" tabindex="-1">
             @RenderBody()
         </main>
     </div>
@@ -136,6 +139,40 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Logout confirmation
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutForm = document.getElementById('logoutForm');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            if (logoutForm && logoutBtn) {
+                logoutForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    showConfirmation(
+                        'Çıkış Yap',
+                        'Hesabınızdan çıkmak istediğinizden emin misiniz?',
+                        function() {
+                            logoutForm.submit();
+                        }
+                    );
+                });
+            }
+
+            // TempData mesajlarını göster
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                showToast('Başarılı!', '@Html.Raw(TempData["SuccessMessage"])', 'success');
+                </text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <text>
+                showToast('Hata!', '@Html.Raw(TempData["ErrorMessage"])', 'error');
+                </text>
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

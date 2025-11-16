@@ -1,4 +1,6 @@
-﻿@model IEnumerable<Timora.Blog.Models.Post>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@model IEnumerable<Timora.Blog.Models.Post>
 @{
     ViewData["Title"] = "Ana Sayfa";
 }
@@ -10,7 +12,14 @@
             <h1 class="display-5 fw-bold text-success-emphasis mb-3">Her Gün Yeni Bir İlham</h1>
             <p class="lead text-muted mb-4">Tutkulu yazarlarımızın özenle hazırladığı içerikleri keşfedin. Yaşamdan teknolojiye, seyahatten sanata kadar aradığınız her şeyi burada bulacaksınız.</p>
             <div class="d-flex flex-wrap gap-3">
-                <a class="btn btn-success btn-lg" asp-controller="Blog" asp-action="Create">Blog Yazısı Paylaş</a>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a class="btn btn-success btn-lg" asp-controller="Blog" asp-action="Create">Blog Yazısı Paylaş</a>
+                }
+                else
+                {
+                    <a class="btn btn-success btn-lg" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Create", "Blog")">Blog Yazısı Paylaş</a>
+                }
                 <a class="btn btn-outline-success btn-lg" asp-controller="Blog" asp-action="Index">Tüm Yazıları Gör</a>
             </div>
         </div>

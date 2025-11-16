@@ -9,6 +9,7 @@ using System.Linq;
 
 namespace Timora.Blog.Controllers
 {
+    [Route("[controller]")]
     public class BlogController : Controller
     {
         private readonly AppDbContext _dbContext;
@@ -22,6 +23,8 @@ namespace Timora.Blog.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet("Index")]
+        [HttpGet]
         public async Task<IActionResult> Index(string? category)
         {
             var query = _dbContext.Posts
@@ -100,7 +103,7 @@ namespace Timora.Blog.Controllers
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("Create")]
         public async Task<IActionResult> Create()
         {
             ViewBag.Categories = await _dbContext.Categories.OrderBy(c => c.Name).ToListAsync();
@@ -114,7 +117,7 @@ namespace Timora.Blog.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPost("Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PostCreateViewModel vm)
         {
@@ -124,6 +127,12 @@ namespace Timora.Blog.Controllers
                 new BreadcrumbItem("Blog", Url.Action("Index", "Blog")),
                 new BreadcrumbItem("Yeni Yazı", null, true)
             };
+
+            // Validate cover image for new posts
+            if (vm.CoverImage == null || vm.CoverImage.Length == 0)
+            {
+                ModelState.AddModelError(nameof(vm.CoverImage), "Kapak fotoğrafı zorunludur.");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -187,7 +196,195 @@ namespace Timora.Blog.Controllers
 
             _dbContext.Posts.Add(post);
             await _dbContext.SaveChangesAsync();
+            
+            TempData["SuccessMessage"] = "Yazınız başarıyla yayınlandı!";
             return RedirectToAction(nameof(Post), new { slug = post.Slug });
+        }
+
+        [Authorize]
+        [HttpGet("Edit/{id:int}")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var post = await _dbContext.Posts
+                .Include(p => p.Author)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            // Check if user is the author
+            var identityUserId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(identityUserId))
+            {
+                return Unauthorized();
+            }
+
+            var profile = await _dbContext.UserProfiles.FirstOrDefaultAsync(p => p.IdentityUserId == identityUserId);
+            if (profile == null || post.AuthorId != profile.Id)
+            {
+                return Forbid();
+            }
+
+            ViewBag.Categories = await _dbContext.Categories.OrderBy(c => c.Name).ToListAsync();
+            ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem("Ana Sayfa", Url.Action("Index", "Home")),
+                new BreadcrumbItem("Blog", Url.Action("Index", "Blog")),
+                new BreadcrumbItem("Yazıyı Düzenle", null, true)
+            };
+
+            var vm = new PostCreateViewModel
+            {
+                Title = post.Title,
+                Content = post.Content,
+                CategoryId = post.CategoryId ?? 0
+            };
+
+            ViewBag.PostId = post.Id;
+            ViewBag.CurrentCoverImage = post.CoverImageUrl;
+
+            return View(vm);
+        }
+
+        [Authorize]
+        [HttpPost("Edit/{id:int}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, PostCreateViewModel vm)
+        {
+            var post = await _dbContext.Posts
+                .Include(p => p.Author)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            // Check if user is the author
+            var identityUserId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(identityUserId))
+            {
+                return Unauthorized();
+            }
+
+            var profile = await _dbContext.UserProfiles.FirstOrDefaultAsync(p => p.IdentityUserId == identityUserId);
+            if (profile == null || post.AuthorId != profile.Id)
+            {
+                return Forbid();
+            }
+
+            ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem("Ana Sayfa", Url.Action("Index", "Home")),
+                new BreadcrumbItem("Blog", Url.Action("Index", "Blog")),
+                new BreadcrumbItem("Yazıyı Düzenle", null, true)
+            };
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Categories = await _dbContext.Categories.OrderBy(c => c.Name).ToListAsync();
+                ViewBag.PostId = post.Id;
+                ViewBag.CurrentCoverImage = post.CoverImageUrl;
+                return View(vm);
+            }
+
+            // Check if title changed before updating
+            bool titleChanged = post.Title != vm.Title;
+            string oldSlug = post.Slug;
+
+            // Update post
+            post.Title = vm.Title;
+            post.Content = vm.Content;
+            post.CategoryId = vm.CategoryId;
+
+            // Update slug if title changed
+            if (titleChanged)
+            {
+                string slug = GenerateSlug(vm.Title);
+                int i = 1;
+                string uniqueSlug = slug;
+                while (await _dbContext.Posts.AnyAsync(p => p.Slug == uniqueSlug && p.Id != id))
+                {
+                    uniqueSlug = $"{slug}-{i++}";
+                }
+                post.Slug = uniqueSlug;
+            }
+
+            // Handle cover image update
+            if (vm.CoverImage != null && vm.CoverImage.Length > 0)
+            {
+                // Delete old image if exists
+                if (!string.IsNullOrEmpty(post.CoverImageUrl))
+                {
+                    var oldImagePath = Path.Combine(_env.WebRootPath, post.CoverImageUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+
+                // Upload new image
+                var uploadsRoot = Path.Combine(_env.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsRoot)) Directory.CreateDirectory(uploadsRoot);
+                var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(vm.CoverImage.FileName)}";
+                var filePath = Path.Combine(uploadsRoot, fileName);
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    await vm.CoverImage.CopyToAsync(stream);
+                }
+                post.CoverImageUrl = $"/uploads/{fileName}";
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Yazınız başarıyla güncellendi!";
+            return RedirectToAction(nameof(Post), new { slug = post.Slug });
+        }
+
+        [Authorize]
+        [HttpPost("Delete/{id:int}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var post = await _dbContext.Posts
+                .Include(p => p.Author)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            // Check if user is the author
+            var identityUserId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(identityUserId))
+            {
+                return Unauthorized();
+            }
+
+            var profile = await _dbContext.UserProfiles.FirstOrDefaultAsync(p => p.IdentityUserId == identityUserId);
+            if (profile == null || post.AuthorId != profile.Id)
+            {
+                return Forbid();
+            }
+
+            // Delete cover image if exists
+            if (!string.IsNullOrEmpty(post.CoverImageUrl))
+            {
+                var imagePath = Path.Combine(_env.WebRootPath, post.CoverImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
+            _dbContext.Posts.Remove(post);
+            await _dbContext.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Yazınız başarıyla silindi!";
+            return RedirectToAction(nameof(Index));
         }
 
         private static string GenerateSlug(string text)

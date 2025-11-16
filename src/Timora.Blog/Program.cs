@@ -21,6 +21,14 @@ builder.Services
     })
     .AddEntityFrameworkStores<AppDbContext>();
 
+// Configure Identity options
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/Login";
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
