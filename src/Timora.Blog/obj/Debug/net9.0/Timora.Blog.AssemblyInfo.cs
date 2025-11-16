@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Timora.Blog")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8534a8b9f4fa90b0c5d79b6fcd42968b95646623")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cfd048ddd46058bcc512d3178af6db116d87af6d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Timora.Blog")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Timora.Blog")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

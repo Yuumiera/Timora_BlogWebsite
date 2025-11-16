@@ -100,14 +100,13 @@
                         <label asp-for="Content" class="form-label fw-semibold">
                             İçerik <span class="text-danger">*</span>
                         </label>
+                        <div id="editor-container" style="min-height: 400px; background-color: var(--card-bg); border: 1px solid var(--border-soft); border-radius: 0.375rem;"></div>
                         <textarea asp-for="Content" 
-                                  class="form-control" 
-                                  rows="15" 
-                                  placeholder="Yazınızın içeriğini buraya yazın...&#10;&#10;HTML etiketleri kullanabilirsiniz. Örneğin:&#10;&lt;p&gt;Paragraf&lt;/p&gt;&#10;&lt;strong&gt;Kalın yazı&lt;/strong&gt;&#10;&lt;em&gt;İtalik yazı&lt;/em&gt;&#10;&lt;h2&gt;Alt başlık&lt;/h2&gt;&#10;&lt;ul&gt;&lt;li&gt;Liste öğesi&lt;/li&gt;&lt;/ul&gt;"
-                                  id="contentInput"></textarea>
+                                  id="contentInput" 
+                                  style="display: none;"></textarea>
                         <span asp-validation-for="Content" class="text-danger"></span>
-                        <div class="form-text">
-                            HTML etiketleri kullanabilirsiniz. İçeriğinizi zenginleştirmek için formatlama kullanın.
+                        <div class="form-text mt-2">
+                            Word benzeri bir editör kullanarak yazınızı formatlayabilirsiniz. Kalın, italik, başlık, liste ve daha fazlası.
                         </div>
                     </div>
 
@@ -137,8 +136,152 @@
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
+    <!-- Quill.js Rich Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Quill Editor Initialization
+            const quill = new Quill('#editor-container', {
+                theme: 'snow',
+                modules: {
+                    toolbar: {
+                        container: [
+                            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'color': [] }, { 'background': [] }],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'align': [] }],
+                            ['link', 'image', 'blockquote', 'code-block'],
+                            ['emoji'],
+                            ['clean']
+                        ],
+                        handlers: {
+                            'emoji': function() {
+                                showEmojiPicker(quill);
+                            }
+                        }
+                    }
+                },
+                placeholder: 'Yazınızın içeriğini buraya yazın...'
+            });
+
+            // Emoji Picker Function
+            function showEmojiPicker(editor) {
+                // Remove existing picker if any
+                const existingPicker = document.getElementById('emojiPickerModal');
+                if (existingPicker) {
+                    existingPicker.remove();
+                }
+
+                // Popular emojis
+                const emojis = [
+                    '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
+                    '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙',
+                    '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔',
+                    '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥',
+                    '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮',
+                    '🤧', '🥵', '🥶', '😶‍🌫️', '😵', '😵‍💫', '🤯', '🤠', '🥳', '😎',
+                    '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲', '😳',
+                    '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱', '😖',
+                    '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠', '🤬',
+                    '😈', '👿', '💀', '☠️', '💋', '💌', '💘', '💝', '💖', '💗',
+                    '💓', '💞', '💕', '💟', '❣️', '💔', '❤️', '🧡', '💛', '💚',
+                    '💙', '💜', '🤎', '🖤', '🤍', '💯', '💢', '💥', '💫', '💦',
+                    '💨', '🕳️', '💣', '💬', '👁️‍🗨️', '🗨️', '🗯️', '💭', '💤', '👋',
+                    '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟',
+                    '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎',
+                    '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏',
+                    '✍️', '💪', '🦾', '🦿', '🦵', '🦶', '👂', '🦻', '👃', '🧠',
+                    '🫀', '🫁', '🦷', '🦴', '👀', '👁️', '👅', '👄', '💋', '🩸'
+                ];
+
+                // Create modal
+                const modal = document.createElement('div');
+                modal.id = 'emojiPickerModal';
+                modal.className = 'emoji-picker-modal';
+                modal.setAttribute('role', 'dialog');
+                modal.setAttribute('aria-modal', 'true');
+                modal.setAttribute('aria-label', 'Emoji Seçici');
+
+                // Create modal content
+                const modalContent = document.createElement('div');
+                modalContent.className = 'emoji-picker-content';
+
+                const modalHeader = document.createElement('div');
+                modalHeader.className = 'emoji-picker-header';
+                modalHeader.innerHTML = `
+                    <h3>Emoji Seç</h3>
+                    <button type="button" class="emoji-picker-close" aria-label="Kapat">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                `;
+
+                const emojiGrid = document.createElement('div');
+                emojiGrid.className = 'emoji-picker-grid';
+                emojis.forEach(emoji => {
+                    const emojiBtn = document.createElement('button');
+                    emojiBtn.type = 'button';
+                    emojiBtn.className = 'emoji-picker-item';
+                    emojiBtn.textContent = emoji;
+                    emojiBtn.setAttribute('aria-label', `Emoji ekle: ${emoji}`);
+                    emojiBtn.addEventListener('click', function() {
+                        const range = editor.getSelection(true);
+                        editor.insertText(range.index, emoji);
+                        editor.setSelection(range.index + emoji.length);
+                        modal.remove();
+                    });
+                    emojiGrid.appendChild(emojiBtn);
+                });
+
+                modalContent.appendChild(modalHeader);
+                modalContent.appendChild(emojiGrid);
+                modal.appendChild(modalContent);
+
+                // Close handlers
+                const closeBtn = modalHeader.querySelector('.emoji-picker-close');
+                closeBtn.addEventListener('click', () => modal.remove());
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+                modal.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') modal.remove();
+                });
+
+                document.body.appendChild(modal);
+                closeBtn.focus();
+            }
+
+            // Sync Quill content to hidden textarea
+            const contentInput = document.getElementById('contentInput');
+            if (contentInput && quill) {
+                // Set initial content if exists
+                if (contentInput.value) {
+                    quill.root.innerHTML = contentInput.value;
+                }
+
+                // Update textarea on content change
+                quill.on('text-change', function() {
+                    contentInput.value = quill.root.innerHTML;
+                });
+
+                // Also update on selection change (for better sync)
+                quill.on('selection-change', function() {
+                    contentInput.value = quill.root.innerHTML;
+                });
+
+                // Update before form submit
+                const postForm = document.getElementById('postForm');
+                if (postForm) {
+                    postForm.addEventListener('submit', function() {
+                        contentInput.value = quill.root.innerHTML;
+                    });
+                }
+            }
+
             // Başlık karakter sayacı
             const titleInput = document.getElementById('titleInput');
             const titleCharCount = document.getElementById('titleCharCount');
@@ -211,9 +354,14 @@
             const postForm = document.getElementById('postForm');
             if (postForm) {
                 postForm.addEventListener('submit', function(e) {
+                    // Sync Quill content before validation
+                    if (quill) {
+                        contentInput.value = quill.root.innerHTML;
+                    }
+
                     const title = titleInput?.value.trim();
                     const category = document.querySelector('[name="CategoryId"]')?.value;
-                    const content = document.getElementById('contentInput')?.value.trim();
+                    const content = contentInput?.value.trim();
                     const coverImage = coverImageInput?.files[0];
 
                     let hasError = false;
@@ -226,7 +374,12 @@
                         hasError = true;
                     }
 
-                    if (!content || content.length === 0) {
+                    // Check if content is empty (only whitespace or empty HTML tags)
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = content || '';
+                    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+                    if (!textContent.trim()) {
+                        showToast('Eksik Bilgi', 'Lütfen yazı içeriği girin.', 'warning');
                         hasError = true;
                     }
 
@@ -236,8 +389,8 @@
                     }
 
                     if (hasError) {
-                        // Validasyon mesajları zaten gösterilecek
-                        return true;
+                        e.preventDefault();
+                        return false;
                     }
                 });
             }
