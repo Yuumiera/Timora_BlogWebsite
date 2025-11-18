@@ -53,6 +53,10 @@ document.addEventListener('DOMContentLoaded', function () {
  * @param {number} duration - Auto-hide duration in ms (0 = no auto-hide)
  */
 function showToast(title, message, type = 'info', duration = 5000) {
+    // Ensure duration is at least 5 seconds
+    if (duration < 5000) {
+        duration = 5000;
+    }
     // Create toast container if it doesn't exist
     let container = document.querySelector('.toast-container');
     if (!container) {
@@ -112,8 +116,18 @@ function showToast(title, message, type = 'info', duration = 5000) {
     // Add to container
     container.appendChild(toast);
 
+    // Force visibility
+    toast.style.opacity = '1';
+    toast.style.visibility = 'visible';
+    toast.style.display = 'flex';
+
+    // Trigger reflow to ensure animation
+    void toast.offsetWidth;
+
     // Focus management for accessibility
-    closeBtn.focus();
+    setTimeout(() => {
+        closeBtn.focus();
+    }, 100);
 }
 
 // ============================================

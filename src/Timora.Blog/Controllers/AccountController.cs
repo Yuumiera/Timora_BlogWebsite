@@ -56,6 +56,7 @@ namespace Timora.Blog.Controllers
             if (result.Succeeded)
             {
                 _logger.LogInformation("Kullanıcı giriş yaptı.");
+                TempData["SuccessMessage"] = "Başarıyla giriş yapıldı!";
                 return RedirectToLocal(returnUrl);
             }
 
@@ -121,6 +122,7 @@ namespace Timora.Blog.Controllers
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 _logger.LogInformation("Yeni kullanıcı oluşturuldu ve giriş yaptı.");
+                TempData["SuccessMessage"] = "Başarıyla kayıt olundu!";
                 return RedirectToLocal(returnUrl);
             }
 
@@ -137,6 +139,7 @@ namespace Timora.Blog.Controllers
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("Kullanıcı çıkış yaptı.");
+            TempData["SuccessMessage"] = "Başarıyla çıkış yapıldı!";
             return RedirectToAction("Index", "Home");
         }
 

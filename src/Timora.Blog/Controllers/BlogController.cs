@@ -24,6 +24,43 @@ namespace Timora.Blog.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search(string? q)
+        {
+            if (string.IsNullOrWhiteSpace(q))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var query = _dbContext.Posts
+                .Where(p => p.IsPublished)
+                .Include(p => p.Category)
+                .Where(p => p.Title.Contains(q))
+                .OrderByDescending(p => p.PublishedAt)
+                .AsQueryable();
+
+            var posts = await query.ToListAsync();
+
+            // Get current culture for breadcrumbs
+            var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
+            var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
+            if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
+            var L = new Func<string, string>((key) => LanguageStrings.Get(key, currentCulture));
+
+            var breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem(L("Home"), Url.Action("Index", "Home")),
+                new BreadcrumbItem(L("Blog"), Url.Action("Index", "Blog")),
+                new BreadcrumbItem($"{L("Search Results")}: {q}", null, true)
+            };
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
+            ViewData["SearchQuery"] = q;
+            ViewData["ResultCount"] = posts.Count;
+
+            return View("Search", posts);
+        }
+
         [HttpGet("Index")]
         [HttpGet]
         public async Task<IActionResult> Index(string? category)

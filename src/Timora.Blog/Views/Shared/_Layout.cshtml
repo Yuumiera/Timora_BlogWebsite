@@ -40,7 +40,9 @@
     <header class="site-header shadow-sm">
         <nav class="navbar navbar-expand-lg navbar-soft navbar-toggleable-sm py-3">
             <div class="container-fluid px-4">
-                <a class="navbar-brand fw-bold text-success-emphasis" asp-controller="Home" asp-action="Index">Timora</a>
+                <a class="navbar-brand fw-bold text-success-emphasis d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/timora-logo.svg" alt="Timora Blog" height="40" class="d-inline-block align-top" />
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav"
                         aria-expanded="false" aria-label="@L("Open Menu")">
                     <span class="navbar-toggler-icon"></span>
@@ -48,6 +50,19 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <div class="navbar-categories ms-3 flex-grow-1">
                         @await Component.InvokeAsync("Categories")
+                    </div>
+                    <div class="navbar-search ms-3">
+                        <form asp-controller="Blog" asp-action="Search" method="get" class="d-flex">
+                            <div class="input-group">
+                                <input type="search" name="q" class="form-control form-control-sm" placeholder="@L("Search")" aria-label="@L("Search")" value="@Context.Request.Query["q"]">
+                                <button class="btn btn-outline-success btn-sm" type="submit" aria-label="@L("Search")">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="m21 21-4.35-4.35"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                     <div class="navbar-actions d-flex align-items-center gap-3 ms-3">
                         <!-- Language Selector -->
@@ -202,29 +217,41 @@
             if (logoutForm && logoutBtn) {
                 logoutForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    showConfirmation(
-                        '@L("Logout Confirmation")',
-                        '@L("Logout Confirmation Message")',
-                        function() {
-                            logoutForm.submit();
-                        }
-                    );
+                    if (typeof showConfirmation === 'function') {
+                        showConfirmation(
+                            '@L("Logout Confirmation")',
+                            '@L("Logout Confirmation Message")',
+                            function() {
+                                logoutForm.submit();
+                            }
+                        );
+                    }
                 });
             }
 
-            // TempData mesajlarını göster
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <text>
-                showToast('Başarılı!', '@Html.Raw(TempData["SuccessMessage"])', 'success');
-                </text>
+            // TempData mesajlarını göster - site.js yüklendikten sonra
+            function showTempDataMessages() {
+                if (typeof showToast === 'function') {
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <text>
+                        showToast('Başarılı!', '@Html.Raw(TempData["SuccessMessage"])', 'success', 5000);
+                        </text>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <text>
+                        showToast('Hata!', '@Html.Raw(TempData["ErrorMessage"])', 'error', 5000);
+                        </text>
+                    }
+                } else {
+                    // Retry if showToast is not yet available
+                    setTimeout(showTempDataMessages, 100);
+                }
             }
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <text>
-                showToast('Hata!', '@Html.Raw(TempData["ErrorMessage"])', 'error');
-                </text>
-            }
+            
+            // Try immediately, then retry if needed
+            setTimeout(showTempDataMessages, 200);
         });
     </script>
     @await RenderSectionAsync("Scripts", required: false)

@@ -70,7 +70,14 @@ namespace Timora.Blog.Models.ViewModels
                 ["View All Posts"] = "Tüm Yazıları Gör",
                 ["Latest Posts"] = "En Yeni Yazılar",
                 ["View All"] = "Tümünü Gör",
-                ["No Content Yet"] = "Henüz içerik eklenmedi. Hemen ilk yazını paylaş!"
+                ["No Content Yet"] = "Henüz içerik eklenmedi. Hemen ilk yazını paylaş!",
+                ["Search"] = "Ara",
+                ["Search Results"] = "Arama Sonuçları",
+                ["Search Results Count"] = "{0} sonuç bulundu: \"{1}\"",
+                ["No Search Results"] = "\"{0}\" için sonuç bulunamadı",
+                ["No Results Found"] = "Sonuç Bulunamadı",
+                ["No Results Message"] = "\"{0}\" için arama sonucu bulunamadı. Farklı bir terim deneyin.",
+                ["Search Again"] = "Tekrar Ara"
             },
 
             ["en-US"] = new Dictionary<string, string>
@@ -137,7 +144,14 @@ namespace Timora.Blog.Models.ViewModels
                 ["View All Posts"] = "View All Posts",
                 ["Latest Posts"] = "Latest Posts",
                 ["View All"] = "View All",
-                ["No Content Yet"] = "No content has been added yet. Share your first post now!"
+                ["No Content Yet"] = "No content has been added yet. Share your first post now!",
+                ["Search"] = "Search",
+                ["Search Results"] = "Search Results",
+                ["Search Results Count"] = "{0} results found for \"{1}\"",
+                ["No Search Results"] = "No results found for \"{0}\"",
+                ["No Results Found"] = "No Results Found",
+                ["No Results Message"] = "No search results found for \"{0}\". Try a different term.",
+                ["Search Again"] = "Search Again"
             },
 
             ["de-DE"] = new Dictionary<string, string>
@@ -204,7 +218,14 @@ namespace Timora.Blog.Models.ViewModels
                 ["View All Posts"] = "Alle Beiträge anzeigen",
                 ["Latest Posts"] = "Neueste Beiträge",
                 ["View All"] = "Alle anzeigen",
-                ["No Content Yet"] = "Es wurde noch kein Inhalt hinzugefügt. Teilen Sie jetzt Ihren ersten Beitrag!"
+                ["No Content Yet"] = "Es wurde noch kein Inhalt hinzugefügt. Teilen Sie jetzt Ihren ersten Beitrag!",
+                ["Search"] = "Suchen",
+                ["Search Results"] = "Suchergebnisse",
+                ["Search Results Count"] = "{0} Ergebnisse gefunden für \"{1}\"",
+                ["No Search Results"] = "Keine Ergebnisse gefunden für \"{0}\"",
+                ["No Results Found"] = "Keine Ergebnisse gefunden",
+                ["No Results Message"] = "Keine Suchergebnisse gefunden für \"{0}\". Versuchen Sie einen anderen Begriff.",
+                ["Search Again"] = "Erneut suchen"
             },
 
             ["fr-FR"] = new Dictionary<string, string>
