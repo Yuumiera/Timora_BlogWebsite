@@ -41,7 +41,6 @@ namespace Timora.Blog.Controllers
 
             var posts = await query.ToListAsync();
 
-            // Get current culture for breadcrumbs
             var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
             var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
             if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
@@ -83,7 +82,6 @@ namespace Timora.Blog.Controllers
 
             var posts = await query.ToListAsync();
 
-            // Get current culture for breadcrumbs
             var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
             var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
             if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
@@ -97,7 +95,6 @@ namespace Timora.Blog.Controllers
 
             if (activeCategory != null)
             {
-                // Get translated category name
                 var categoryName = L(activeCategory.Slug);
                 breadcrumbs.Add(new BreadcrumbItem(categoryName, Url.Action("Index", "Blog", new { category = activeCategory.Slug })));
             }
@@ -140,7 +137,6 @@ namespace Timora.Blog.Controllers
 
             if (post.Category != null)
             {
-                // Get translated category name
                 var categoryName = L(post.Category.Slug);
                 breadcrumbs.Add(new BreadcrumbItem(categoryName, Url.Action("Index", "Blog", new { category = post.Category.Slug })));
             }
@@ -160,7 +156,6 @@ namespace Timora.Blog.Controllers
         [HttpGet("Create")]
         public async Task<IActionResult> Create()
         {
-            // Get current culture
             var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
             var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
             if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
@@ -194,7 +189,6 @@ namespace Timora.Blog.Controllers
                 new BreadcrumbItem(L("New Post"), null, true)
             };
 
-            // Validate cover image for new posts
             if (vm.CoverImage == null || vm.CoverImage.Length == 0)
             {
                 ModelState.AddModelError(nameof(vm.CoverImage), "Kapak fotoğrafı zorunludur.");
@@ -207,7 +201,6 @@ namespace Timora.Blog.Controllers
             }
 
             string slug = GenerateSlug(vm.Title);
-            // Ensure slug uniqueness
             int i = 1;
             string uniqueSlug = slug;
             while (await _dbContext.Posts.AnyAsync(p => p.Slug == uniqueSlug))
@@ -240,7 +233,6 @@ namespace Timora.Blog.Controllers
                 CoverImageUrl = coverUrl
             };
 
-            // Attach current user as author (ensure profile exists)
             var identityUserId = _userManager.GetUserId(User);
             if (!string.IsNullOrEmpty(identityUserId))
             {
@@ -280,7 +272,6 @@ namespace Timora.Blog.Controllers
                 return NotFound();
             }
 
-            // Check if user is the author
             var identityUserId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(identityUserId))
             {
@@ -293,7 +284,6 @@ namespace Timora.Blog.Controllers
                 return Forbid();
             }
 
-            // Get current culture
             var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
             var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
             if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";
@@ -334,7 +324,6 @@ namespace Timora.Blog.Controllers
                 return NotFound();
             }
 
-            // Check if user is the author
             var identityUserId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(identityUserId))
             {
@@ -368,7 +357,6 @@ namespace Timora.Blog.Controllers
                 return View(vm);
             }
 
-            // Check if title changed before updating
             bool titleChanged = post.Title != vm.Title;
             string oldSlug = post.Slug;
 
@@ -377,7 +365,6 @@ namespace Timora.Blog.Controllers
             post.Content = vm.Content;
             post.CategoryId = vm.CategoryId;
 
-            // Update slug if title changed
             if (titleChanged)
             {
                 string slug = GenerateSlug(vm.Title);
@@ -390,10 +377,8 @@ namespace Timora.Blog.Controllers
                 post.Slug = uniqueSlug;
             }
 
-            // Handle cover image update
             if (vm.CoverImage != null && vm.CoverImage.Length > 0)
             {
-                // Delete old image if exists
                 if (!string.IsNullOrEmpty(post.CoverImageUrl))
                 {
                     var oldImagePath = Path.Combine(_env.WebRootPath, post.CoverImageUrl.TrimStart('/'));
@@ -403,7 +388,6 @@ namespace Timora.Blog.Controllers
                     }
                 }
 
-                // Upload new image
                 var uploadsRoot = Path.Combine(_env.WebRootPath, "uploads");
                 if (!Directory.Exists(uploadsRoot)) Directory.CreateDirectory(uploadsRoot);
                 var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(vm.CoverImage.FileName)}";
@@ -435,7 +419,6 @@ namespace Timora.Blog.Controllers
                 return NotFound();
             }
 
-            // Check if user is the author
             var identityUserId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(identityUserId))
             {
@@ -448,7 +431,6 @@ namespace Timora.Blog.Controllers
                 return Forbid();
             }
 
-            // Delete cover image if exists
             if (!string.IsNullOrEmpty(post.CoverImageUrl))
             {
                 var imagePath = Path.Combine(_env.WebRootPath, post.CoverImageUrl.TrimStart('/'));

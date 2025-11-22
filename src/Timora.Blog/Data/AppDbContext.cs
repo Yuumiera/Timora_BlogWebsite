@@ -58,7 +58,6 @@ namespace Timora.Blog.Data
                 entity.HasIndex(u => u.IdentityUserId);
             });
 
-            // Seed 11 categories
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Yaşam Tarzı ve Kişisel Gelişim", Slug = "yasam-tarzi-ve-kisisel-gelisim" },
                 new Category { Id = 2, Name = "Yemek ve Beslenme", Slug = "yemek-ve-beslenme" },

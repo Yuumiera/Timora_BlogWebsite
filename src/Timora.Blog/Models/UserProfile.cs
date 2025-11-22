@@ -6,10 +6,8 @@ namespace Timora.Blog.Models
     {
         public int Id { get; set; }
 
-        // ASP.NET Core Identity linkage
         public string? IdentityUserId { get; set; }
 
-        // Public profile fields
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public DateTime? BirthDate { get; set; }

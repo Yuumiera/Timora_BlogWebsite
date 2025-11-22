@@ -14,12 +14,10 @@ namespace Timora.Blog.Controllers
             if (string.IsNullOrWhiteSpace(culture))
                 culture = "tr-TR";
 
-            // Validate culture
             var supportedCultures = LanguageStrings.GetSupportedCultures();
             if (!supportedCultures.Contains(culture))
                 culture = "tr-TR";
 
-            // Set cookie using the same cookie name as CookieRequestCultureProvider
             Response.Cookies.Append(
                 CookieRequestCultureProvider.DefaultCookieName,
                 CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),

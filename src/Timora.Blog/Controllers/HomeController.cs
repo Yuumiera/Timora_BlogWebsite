@@ -29,7 +29,6 @@ public class HomeController : Controller
             .Take(9)
             .ToListAsync();
 
-        // Get current culture for breadcrumbs
         var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
         var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
         if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";

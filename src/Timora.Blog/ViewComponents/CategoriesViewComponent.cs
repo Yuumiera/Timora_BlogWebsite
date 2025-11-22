@@ -21,7 +21,6 @@ namespace Timora.Blog.ViewComponents
                 .OrderBy(c => c.Id)
                 .ToListAsync();
             
-            // Get current culture
             var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
             var currentCulture = requestCultureFeature?.RequestCulture?.UICulture?.Name ?? "tr-TR";
             if (string.IsNullOrEmpty(currentCulture) || currentCulture == "tr") currentCulture = "tr-TR";

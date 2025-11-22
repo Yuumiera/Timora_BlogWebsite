@@ -113,7 +113,6 @@ namespace Timora.Blog.Controllers
 
                 if (model.Age > 0)
                 {
-                    // Yaşı yaklaşık doğum tarihine çevir
                     profile.BirthDate = DateTime.UtcNow.AddYears(-model.Age);
                 }
 

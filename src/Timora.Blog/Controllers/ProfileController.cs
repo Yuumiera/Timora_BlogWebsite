@@ -69,7 +69,6 @@ namespace Timora.Blog.Controllers
 
             if (profile == null)
             {
-                // Create profile if doesn't exist
                 var identityUser = await _userManager.GetUserAsync(User);
                 profile = new Models.UserProfile
                 {
@@ -136,7 +135,6 @@ namespace Timora.Blog.Controllers
                 return View(vm);
             }
 
-            // Update profile
             profile.FirstName = vm.FirstName;
             profile.LastName = vm.LastName;
             profile.BirthDate = vm.BirthDate;
@@ -146,10 +144,8 @@ namespace Timora.Blog.Controllers
             profile.Phone = vm.Phone;
             profile.Interests = vm.Interests;
 
-            // Handle profile image update
             if (vm.ProfileImage != null && vm.ProfileImage.Length > 0)
             {
-                // Delete old image if exists
                 if (!string.IsNullOrEmpty(profile.ProfileImageUrl))
                 {
                     var oldImagePath = Path.Combine(_env.WebRootPath, profile.ProfileImageUrl.TrimStart('/'));
@@ -159,7 +155,6 @@ namespace Timora.Blog.Controllers
                     }
                 }
 
-                // Upload new image
                 var uploadsRoot = Path.Combine(_env.WebRootPath, "uploads", "profiles");
                 if (!Directory.Exists(uploadsRoot)) Directory.CreateDirectory(uploadsRoot);
                 var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(vm.ProfileImage.FileName)}";
